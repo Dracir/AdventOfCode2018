@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace AdventOfCode2018
 {
@@ -180,6 +181,26 @@ namespace AdventOfCode2018
 			}
 		}
 
+		public static void WriteWithTime(Func<String> func){
+			var t = new Stopwatch();
+			t.Start();
+			NoelConsole.Write("Output for input : " + func());
+			t.Stop();
+			NoelConsole.Write(String.Format("Time : {0:0.00}s",t.ElapsedMilliseconds/1000f));
+		}
+
+		public static void Write(int[,] values){
+			var arrayStr = "";
+			for (int i = 0; i < values.GetLength(0); i++)
+			{
+				for (int j = 0; j < values.GetLength(1); j++)
+				{
+					arrayStr += values[i,j] + ","; 
+				}
+				arrayStr+= "\n";
+			}
+			Write(arrayStr);
+		}
 
 		public static void Write(string value)
 		{

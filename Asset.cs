@@ -52,7 +52,7 @@ namespace AdventOfCode2018
 
 		private static void PrintSucess(string message)
 		{
-			NoelConsole.BackgroundColor = ConsoleColor.Green;
+			NoelConsole.BackgroundColor = ConsoleColor.DarkGreen;
 			NoelConsole.Write("[Sucess] " + message);
 			Console.ResetColor();
 		}
