@@ -22,8 +22,8 @@ namespace AdventOfCode2018
 			NoelConsole.WriteWithTime(() => "" + Part1(input));
 
 
-			//NoelConsole.Write("\n*Day  - Part 2*");
-			//NoelConsole.WriteWithTime(() => "" + Part2(input));
+			NoelConsole.Write("\n*Day  - Part 2*");
+			NoelConsole.WriteWithTime(() => "" + Part2(input));
 		}
 
 		private static int Part1(string[] input)
@@ -32,19 +32,17 @@ namespace AdventOfCode2018
 			var charCounts = input.Select(value => CountDupplicate(value));
 
 			return new int[] { 2, 3 }.Product(value => charCounts.Where(dic => dic.Any(kv => kv.Value == value)).Count());
-			return new int[] { 2, 3 }.Aggregate(0, (mult, value) => mult * charCounts.Where(dic => dic.Any(kv => kv.Value == value)).Count());
-			return charCounts.Where(dic => dic.Any(kv => kv.Value == 2)).Count() * charCounts.Where(dic => dic.Any(kv => kv.Value == 3)).Count();
 		}
 
 		private static Dictionary<char, int> CountDupplicate(string value) =>
 			value.Aggregate(new Dictionary<char, int>(), (dic, character) => dic.AddValue(character, 1));
 
 
-		private static int Part2(string[] input)
+		private static string Part2(string[] input)
 		{
 
-			GetKeyValues(input).First(kv => HasOnly1Different(kv.Key, kv.Value));
-			return 0;
+			var a = GetKeyValues(input).First(kv => HasOnly1Different(kv.Key, kv.Value));
+			return GetCharChar(a.Key,a.Value).Aggregate("",(str,kv) =>  str += (kv.Key == kv.Value) ? kv.Value.ToString() : "");
 		}
 
 		private static bool HasOnly1Different(string key, string value) =>
