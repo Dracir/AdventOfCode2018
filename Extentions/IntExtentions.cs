@@ -7,4 +7,6 @@ public static class IntExtentions
 	{
 		return value == 0 ? 1 : (int)Math.Floor(Math.Log10(Math.Abs(value)) + 1);
 	}
+
+	
 }

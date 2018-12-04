@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AdventOfCode2018
 {
@@ -25,6 +26,19 @@ namespace AdventOfCode2018
 				if (predicate(accumulate)) break;
 			}
 			return accumulate;
+		}
+
+		public static int Product<T>(this IEnumerable<T> enumerable, Func<T,int> func )
+		{
+			return enumerable.Aggregate(1, (mult, value) => mult * func(value));
+		}
+
+		public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
+		{
+			foreach (T item in enumeration)
+			{
+				action(item);
+			}
 		}
 	}
 }

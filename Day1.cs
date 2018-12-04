@@ -76,12 +76,9 @@ namespace AdventOfCode2018
 		static IEnumerable<int> WhileTrue(int[] values)
 		{
 			int index = 0;
-			while (true)
-			{
-				while (index < values.Length)
-					yield return values[index++];
-				index = 0;
-			}
+			yield return values[index++ % values.Length];
+
+
 		}
 	}
 }
