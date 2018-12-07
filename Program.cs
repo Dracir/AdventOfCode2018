@@ -8,10 +8,10 @@ namespace AdventOfCode2018
 		static void Main(string[] args)
 		{
 			Console.WindowWidth = 150;
-			Console.WindowHeight = 40;
+			Console.WindowHeight = 55;
 			Console.WindowTop = 10;
 			NoelConsole.Redraw();
-			Day2.Work();
+			Day5.Work();
 
 			while (true)
 			{

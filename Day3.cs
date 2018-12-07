@@ -69,9 +69,12 @@ namespace AdventOfCode2018
 			int[,] fabric = new int[totalWidth, totalHeight];
 
 			var data = new Data(rects.Select(r => r.Id).ToList(), fabric);
-			var finalFabric = rects.Aggregate(data, (d, cut) => AddCut(d, cut));
-
-			return finalFabric.Fabric.Cast<int>().Where(value => value > 1).Count();
+			
+			return rects
+				.Aggregate(data, (d, cut) => AddCut(d, cut))
+				.Fabric.Cast<int>()
+				.Where(value => value > 1)
+				.Count();
 		}
 
 		private static Data AddCut(Data data, Rect cut)

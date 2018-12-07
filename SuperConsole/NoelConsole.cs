@@ -47,10 +47,16 @@ namespace AdventOfCode2018
 				LastWidth = Width;
 				LastHeight = Height;
 			}
+
 			GiftGenerator = new Random(10);
+
+			/* ConsoleSnow.Simulate();
+			ConsoleSnow.Particules.ForEach(p => Draw(p));*/
 
 			DrawContour();
 			DrawGifts();
+
+
 
 			Console.CursorVisible = false;
 			Console.CursorLeft = 1;
@@ -58,13 +64,31 @@ namespace AdventOfCode2018
 			Console.CursorTop = Bottom - 1;
 		}
 
+		private static void Draw(SnowParticule p)
+		{
+			Position = new Point(p.X, p.Y);
+			//BackgroundColor = ConsoleColor.DarkGray;
+			ForegroundColor = ConsoleColor.White;
+			Console.Write("*");
+
+
+			Position = new Point(p.LastX, p.LastY);
+			BackgroundColor = ConsoleColor.DarkGray;
+			Console.Write(" ");
+
+
+			Position = new Point(p.LastLastX, p.LastLastY);
+			Console.ResetColor();
+			Console.Write(" ");
+		}
+
 		private static void DrawGifts()
 		{
 			int x = 3;
 			int y = Height - 2;
-			for (int day = 0; day < Progression.Stars.Length; day++)
+			for (int day = 1; day <= Progression.Stars.Length; day++)
 			{
-				int stars = Progression.Stars[day];
+				int stars = Progression.Stars[day-1];
 				int giftSize = 0;
 				if (stars == 2)
 					giftSize = DrawBigGift(day, x, y);
@@ -181,23 +205,25 @@ namespace AdventOfCode2018
 			}
 		}
 
-		public static void WriteWithTime(Func<String> func){
+		public static void WriteWithTime(Func<String> func)
+		{
 			var t = new Stopwatch();
 			t.Start();
 			NoelConsole.Write("Output for input : " + func());
 			t.Stop();
-			NoelConsole.Write(String.Format("Time : {0:0.00}s",t.ElapsedMilliseconds/1000f));
+			NoelConsole.Write(String.Format("Time : {0:0.00}s", t.ElapsedMilliseconds / 1000f));
 		}
 
-		public static void Write(int[,] values){
+		public static void Write(int[,] values)
+		{
 			var arrayStr = "";
 			for (int i = 0; i < values.GetLength(0); i++)
 			{
 				for (int j = 0; j < values.GetLength(1); j++)
 				{
-					arrayStr += values[i,j] + ","; 
+					arrayStr += values[i, j] + ",";
 				}
-				arrayStr+= "\n";
+				arrayStr += "\n";
 			}
 			Write(arrayStr);
 		}

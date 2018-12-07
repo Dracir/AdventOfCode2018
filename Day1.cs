@@ -26,7 +26,9 @@ namespace AdventOfCode2018
 
 		private static int Part1(string input)
 		{
-			return input.Split(",").Select(s => Int32.Parse(s)).Aggregate((s, n) => s + n);
+			return input.Split(",")
+				.Select(s => Int32.Parse(s))
+				.Aggregate((s, n) => s + n);
 
 		}
 

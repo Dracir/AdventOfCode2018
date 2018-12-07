@@ -28,7 +28,6 @@ namespace AdventOfCode2018
 
 		private static int Part1(string[] input)
 		{
-
 			var charCounts = input.Select(value => CountDupplicate(value));
 
 			return new int[] { 2, 3 }.Product(value => charCounts.Where(dic => dic.Any(kv => kv.Value == value)).Count());
