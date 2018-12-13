@@ -41,7 +41,7 @@ namespace AdventOfCode2018
 		{
 
 			var a = GetKeyValues(input).First(kv => HasOnly1Different(kv.Key, kv.Value));
-			return GetCharChar(a.Key,a.Value).Aggregate("",(str,kv) =>  str += (kv.Key == kv.Value) ? kv.Value.ToString() : "");
+			return a.Key.Zip(a.Value, (a1, b1) => (a1, b1)).Aggregate("",(str,kv) =>  str += (kv.a1 == kv.b1) ? kv.b1.ToString() : "");
 		}
 
 		private static bool HasOnly1Different(string key, string value) =>

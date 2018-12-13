@@ -17,7 +17,7 @@ namespace AdventOfCode2018
 
 			NoelConsole.Write("*Day 4 - Part 1*");
 
-			Asset.AreEqual(240, Part1(ParseInputForPart1(test1)), "Test1");
+			//Asset.AreEqual(240, Part1(ParseInputForPart1(test1)), "Test1");
 
 			NoelConsole.WriteWithTime(() => "" + Part1(ParseInputForPart1(input)));
 
@@ -44,7 +44,7 @@ namespace AdventOfCode2018
 				guardEventList.Add(item);
 			}
 
-			return guardEventList;
+			return guardEventList.OrderBy(x => x.Date).ToList();
 		}
 
 		private static GuardEvent ParseGuardEvent(string str)
@@ -74,49 +74,59 @@ namespace AdventOfCode2018
 		private static int Part1(List<GuardEvent> input)
 		{
 			var maxId = input.Max(i => i.ID);
-			var shifts = new List<int[]>();
-			Enumerable.Range(0, maxId - 1).ForEach(i => shifts.Add(new int[60]));
+			var shifts = new Dictionary<int, int[]>();
 
-			input.Where(i => !i.IsBeginsShift)
+			input.DistinctBy(x => x.ID)
+			.ForEach(x => shifts
+			.Add(x.ID, new int[60]));
+
+			var sleepEvent = input.Where(i => !i.IsBeginsShift)
 				.PairUp()
-				.ForEach(pair =>
+				.Select(pair => new SleepEvent(pair.Item1.ID, pair.Item1.Date, pair.Item2.Date.Minute - pair.Item1.Date.Minute));
+
+			//sleepEvent.ForEach(se => NoelConsole.Write(se.ToString()));
+			var dod = sleepEvent.ToArray();
+			sleepEvent.ForEach(se =>
+			{
+				for (int i = se.Start.Minute; i < se.Start.Minute + se.Duration; i++)
+					shifts[se.ID][i] += 1;
+			});
+
+			var mostSleeper = shifts
+			.MaxBy(s => s.Value.Sum());
+
+			var maxMin = mostSleeper.Value
+			.Select((time, min) => new { time, min })
+			.MaxBy(x => x.time);
+
+			PrintShifts(shifts);
+			return mostSleeper.Key * maxMin.min;
+		}
+
+		private static void PrintShifts(Dictionary<int, int[]> shifts)
+		{
+			var a = "";
+			var b = "";
+			for (int i = 0; i < 6; i++)
+				for (int j = 0; j < 10; j++)
 				{
-					for (int i = pair.Item1.Date.Minute; i <= pair.Item2.Date.Minute; i++)
-						shifts[pair.Item1.ID-1][i]++;
-				});
+					a += i.ToString() + "\t";
+					b += j.ToString() + "\t";
+				}
 
-			/* var maxSleeper = shifts.MaxBy((g,i)=>g.Sum());
+			var output = "ID\tMinute\n\t\t" + a + "\n\t\t" + b;
 
-
-			var shifts = new int[maxId, 60];
-
-			var shiftsValues = input.Where(i => !i.IsBeginsShift)
-				.PairUp()
-				.Aggregate(shifts, (s, pair) =>
-					{
-						for (int i = pair.Item1.Date.Minute; i <= pair.Item2.Date.Minute; i++)
-							s[pair.Item1.ID, i]++;
-						return s;
-					});
-
-			input.Select(i => i.ID)
-			.Distinct()
-			.Max((i) => Enumerable.Range(pair.Item1.Date.Minute, pair.Item2.Date.Minute)
-						.Sum(x => shifts[i, x]));
-
-			var data = new List<Part1Data>();
-
-			var mostSleeperId = input.Aggregate(data, (d, eve) => ParseEvent(d, eve))
-				.MaxBy(e => e.SleepingTime)
-				.ID;
- */
-			int[] sleeps = new int[60];
-			/* input.Where(i => i.ID == mostSleeperId)
-			.Aggregate(sleeps,(acc,
-			;*/
+			foreach (var s in shifts)
+			{
+				output += $"\n{s.Key:0000}\t";
+				foreach (var min in s.Value)
+				{
+					output += min.ToString() + "\t";
+				}
+			}
 
 
-			return 1;
+			File.WriteAllText("Output/D4.txt", output);
 		}
 
 		private static List<Part1Data> ParseEvent(List<Part1Data> list, GuardEvent eve)
@@ -156,12 +166,12 @@ namespace AdventOfCode2018
 	struct Part1Data
 	{
 		public int ID;
-		public bool IsSleeping;
+		//public bool IsSleeping;
 		public DateTime StartSleep;
 		public int SleepingTime;
 	}
 
-	struct GuardEvent
+	class GuardEvent
 	{
 		public DateTime Date;
 
@@ -178,6 +188,11 @@ namespace AdventOfCode2018
 			this.IsFallAsleep = false;
 			this.ID = 0;
 		}
+
+		public override string ToString()
+		{
+			return $"{ID} at {Date}";
+		}
 	}
 
 	struct GuardShift
@@ -189,6 +204,26 @@ namespace AdventOfCode2018
 		{
 			this.Date = date;
 			this.Events = events;
+		}
+	}
+
+	class SleepEvent
+	{
+
+		public int ID;
+		public DateTime Start;
+		public int Duration;
+
+		public SleepEvent(int id, DateTime start, int duration)
+		{
+			this.ID = id;
+			this.Start = start;
+			this.Duration = duration;
+		}
+
+		public override string ToString()
+		{
+			return $"{ID} at {Start.Month}-{Start.Day} sleep {Duration}mins.";
 		}
 	}
 }

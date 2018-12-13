@@ -61,6 +61,11 @@ namespace AdventOfCode2018
 
 		}
 
+		public static IEnumerable<T> Flatten<T>(this IEnumerable<T> e, Func <T,IEnumerable<T>> selector)
+		{
+			return e.SelectMany(c => Flatten(selector(c), selector));
+		}
+
 
 		public static List<Tuple<T, T>> PairUp<T>(this IEnumerable<T> enumeration)
 		{

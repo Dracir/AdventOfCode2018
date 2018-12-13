@@ -16,14 +16,17 @@ namespace AdventOfCode2018
 
 			string[] test = File.ReadAllLines("Data/D6Test.txt");
 			string[] input = File.ReadAllLines("Data/D6Input.txt");
+			string[] inputF = File.ReadAllLines("Data/D6InputFelix.txt");
 
 			var testPts = ParsePoints(test);
 			var inputPts = ParsePoints(input);
+			var inputsF = ParsePoints(inputF);
 
 			//Asset.AreEqual(17, Part1(testPts), "Part1 Test 1");
 
 
-			NoelConsole.WriteWithTime(() => "" + Part1(inputPts));
+			//NoelConsole.WriteWithTime(() => "" + Part1(inputPts));
+			NoelConsole.WriteWithTime(() => "" + Part1(inputsF));
 
 			//NoelConsole.Write("\n*Day 3 - Part 2*");
 
