@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace AdventOfCode2018
 {
-	public class Day10
+	public class Day12
 	{
 		public static void Work()
 		{
