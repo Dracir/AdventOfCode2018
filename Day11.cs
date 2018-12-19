@@ -16,27 +16,33 @@ namespace AdventOfCode2018
 			//string test = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2";
 			//string[] input = File.ReadAllLines("Data/D9Input.txt");
 
-			Asset.AreEqual(4, CalculatePower(Tuple.Create(3, 5), 8), "Part1 Test 1");
-			Asset.AreEqual(-5, CalculatePower(Tuple.Create(122, 79), 57), "Part1 Test 1");
-			Asset.AreEqual(0, CalculatePower(Tuple.Create(217, 196), 39), "Part1 Test 1");
-			Asset.AreEqual(4, CalculatePower(Tuple.Create(101, 153), 71), "Part1 Test 1");
+			Asset.AreEqual(4, CalculatePower((3, 5), 8), "Part1 Test Calculate power");
+			Asset.AreEqual(-5, CalculatePower((122, 79), 57), "Part1 Calculate power");
+			Asset.AreEqual(0, CalculatePower((217, 196), 39), "Part1 Calculate power");
+			Asset.AreEqual(4, CalculatePower((101, 153), 71), "Part1 Calculate power");
 
-			Asset.AreEqual("33,45", Part1(18), "Part1 For 18");
-			Asset.AreEqual("21,61", Part1(42), "Part1 For 42");
-			NoelConsole.WriteWithTime(() => "" + Part1(input));
+			//Asset.AreEqual("33,45", Part1(18), "Part1 For 18");
+			//Asset.AreEqual("21,61", Part1(42), "Part1 For 42");
+
+
 
 			//Part1Test(input);
 
-			PrintGrid(MakeGrid(18,5));
-			Asset.AreEqual("3,1,3", Part2(MakeGrid(18,5),5), "Part2 For 18 of size 5");
+			/* NoelConsole.Write("Max size at 1, 1 is " + CalculateMaxArea(1, 1, MakeGrid(18, 4)));
+			PrintGrid(MakeGrid(18, 4));
 
+			Asset.AreEqual("3,1,3", Part2(MakeGrid(18, 5), 5), "Part2 For 18 of size 5");
+			PrintGrid(MakeGrid(18, 5));
 
-			/* Asset.AreEqual("90,269,16", Part2(MakeGrid(18,300),300), "Part2 For 18");
-			Asset.AreEqual("232,251,12", Part2(MakeGrid(42,300),300), "Part2 For 42");
-			NoelConsole.WriteWithTime(() => "" + Part2(MakeGrid(input,300),300)); */
+			NoelConsole.WriteWithTime(() => "" + Part1(input)); */
+
+			//Asset.AreEqual("90,269,16", Part2(MakeGrid(18,300),300), "Part2 For 18");
+			//Asset.AreEqual("232,251,12", Part2(MakeGrid(42,300),300), "Part2 For 42");
+			NoelConsole.WriteWithTime(() => "" + Part2(MakeGrid(input,300),300));
 		}
 
-		private static void PrintGrid(int[,] values){
+		private static void PrintGrid(int[,] values)
+		{
 			var arrayStr = "";
 			for (int i = 1; i < values.GetLength(0); i++)
 			{
@@ -51,8 +57,8 @@ namespace AdventOfCode2018
 
 		private static int[,] MakeGrid(int input, int size)
 		{
-			var powers = GridValues(size, size).Select(x => (x.Item1, x.Item2, CalculatePower(x, input)));
-			int[,] powerCells = new int[size+1, size+1];
+			var powers = GridValues(size, size).Select(pt => (pt.x, pt.y, CalculatePower(pt, input)));
+			int[,] powerCells = new int[size + 1, size + 1];
 			powers.ForEach(x => powerCells[x.Item1, x.Item2] = x.Item3);
 			return powerCells;
 		}
@@ -87,10 +93,10 @@ namespace AdventOfCode2018
 
 		}
 
-		private static int CalculatePower(Tuple<int, int> pt, int input)
+		private static int CalculatePower((int x, int y) pt, int input)
 		{
-			int x = pt.Item1;
-			int y = pt.Item2;
+			int x = pt.x;
+			int y = pt.y;
 			int rackID = x + 10;
 
 			int power = rackID * ((rackID * y) + input);
@@ -105,20 +111,12 @@ namespace AdventOfCode2018
 			return power;
 		}
 
-		static IEnumerable<Tuple<int, int>> GridValues(int width, int height)
+		static IEnumerable<(int x, int y)> GridValues(int width, int height)
 		{
 			for (int x = 1; x <= width; x++)
 				for (int y = 1; y <= height; y++)
-					yield return Tuple.Create(x, y);
+					yield return (x, y);
 
-		}
-
-		static IEnumerable<Tuple<int, int, int>> GridValues(int width, int height, int size)
-		{
-			for (int s = 1; s <= size; s++)
-				for (int x = 1; x <= width - (s - 1); x++)
-					for (int y = 1; y <= height - (s - 1); y++)
-						yield return Tuple.Create(x, y, size);
 		}
 
 
@@ -127,29 +125,28 @@ namespace AdventOfCode2018
 		{
 
 			var max = GridValues(size, size)
-			.Select(x =>
-			{
-				return (x.Item1, x.Item2, CalculateMaxArea(x.Item1, x.Item2, powerCells,size));
-			})
-			.MaxBy(x => x.Item3);
-			return $"{max.Item1},{max.Item2},{max.Item3} of size {CalculateArea(max.Item1,max.Item2,powerCells,max.Item3)}";
+			.AsParallel()
+			.Select(pt => (pt.x, pt.y, CalculateMaxArea(pt.x, pt.y, powerCells)))
+			.MaxBy(pt => pt.Item3.area);
+			return $"{max.x},{max.y},{max.Item3.size} of size {max.Item3.area}";
 		}
 
 
 
-		private static int CalculateMaxArea(int x, int y, int[,] powerCells, int size)
+		private static (int size, int area) CalculateMaxArea(int x, int y, int[,] powerCells)
 		{
 			int area = 0;
 			int maxArea = 0;
 			int maxAreaIndex = 0;
-			int maxSize = size - Math.Max(x, y);
+			int maxSize = powerCells.GetLength(1) - Math.Max(x, y);
 			for (int s = 1; s <= maxSize; s++)
 			{
-				for (int i = 0; i < s; i++)
+				for (int i = 1; i < s; i++)
 				{
-					area += powerCells[x + s - 1, y + i];
-					area += powerCells[x + i, y + s - 1];
+					area += powerCells[x + s - 1, y + i - 1];
+					area += powerCells[x + i - 1, y + s - 1];
 				}
+
 				area += powerCells[x + s - 1, y + s - 1];
 
 				if (area > maxArea)
@@ -157,10 +154,11 @@ namespace AdventOfCode2018
 					maxArea = area;
 					maxAreaIndex = s;
 				}
+				//NoelConsole.Write($"At {x},{y},{s} the area : {area}");
 			}
 
 
-			return maxAreaIndex;
+			return (maxAreaIndex, maxArea);
 		}
 	}
 }

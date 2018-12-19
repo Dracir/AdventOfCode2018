@@ -19,7 +19,7 @@ namespace AdventOfCode2018
 			var inputvalues = Parser.ParseIntArray(input, ' ');
 
 			Asset.AreEqual(138, Part1(testvalues), "Part1 Test 1");
-			//NoelConsole.WriteWithTime(() => "" + Part1(inputvalues));
+			NoelConsole.WriteWithTime(() => "" + Part1(inputvalues));
 			//NoelConsole.WriteWithTime(() => "" + Part2(inputvalues));
 		}
 
@@ -29,7 +29,7 @@ namespace AdventOfCode2018
 		{
 			var root = ParseNode(input);
 
-			PrintNodes(root);
+			//PrintNodes(root);
 
 			return SumMeta(root);
 		}
@@ -55,7 +55,7 @@ namespace AdventOfCode2018
 			int nbChilds = input[0];
 			int nbMeta = input[1];
 
-			NoelConsole.Write(String.Join(",", input));
+			//NoelConsole.Write(String.Join(",", input));
 
 			if (nbChilds == 0)
 			{
