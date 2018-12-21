@@ -27,8 +27,8 @@ namespace AdventOfCode2018
 
 			//NoelConsole.WriteWithTime(() => "" + Part2(File.ReadAllLines("Data/D18Test.txt"), 10, true));
 			//NoelConsole.WriteWithTime(() => "" + Part2(input, 10, true));
-			Asset.AreEqual(675100, Part2(input, 10, false), "Part1 Input Answer");
-			Asset.AreEqual(191820, Part2(input, 1000000000, false), "Part2 Input Answer");
+			Asset.AreEqual(675100, Part2(input, 10, true), "Part1 Input Answer");
+			Asset.AreEqual(191820, Part2(input, 1000000000, true), "Part2 Input Answer");
 			//NoelConsole.WriteWithTime(() => "" + Part2(input, 1000000000, false));
 		}
 
@@ -145,73 +145,28 @@ namespace AdventOfCode2018
 
 			//NoelConsole.Write("Generating All Map Posiblities ...");
 
-			int value = NoelConsole.WritingYPosition + 1;
-			if (print)
-			{
-				NoelConsole.WritingYPosition = value;
-				NoelConsole.Write(String.Join('\n', input));
-			}
-
-			var maps = new List<string[]>();
-			var mapsLookup = new Dictionary<string[], int>(new MapEqualityComparer());
-			var transition = new Dictionary<int, int>();
+			var processor = new CachedProcessor<string[]>(new MapEqualityComparer(), (inVal) => Simulate(inVal));
+			processor.Print = print;
+			//processor.PrintTAction = PrintLine;
+			var result = processor.Run(input, nbSimulation);
+			return CalculateScore(result);
 
 
-			maps.Add(input);
-			mapsLookup.Add(input, 0);
-			var mapEmpty = MakeEmptyMap(input.Length);
-
-			int currentIndex = 0;
-			int firstIndexLoop = 0;
-			int loopbackIndex = 0;
-			for (int i = 1; i <= nbSimulation; i++)
-			{
-				if (currentIndex >= transition.Count)
-				{
-					var newMap = Simulate(maps[currentIndex]);
-					int nextValue = 0;
-					if (mapsLookup.TryGetValue(newMap, out nextValue))
-					{
-						if (firstIndexLoop == 0)
-						{
-							loopbackIndex = transition[nextValue];
-							firstIndexLoop = i;
-							//currentIndex = loopbackIndex + (int)((nbSimulation - i) % (loopbackIndex - firstIndexLoop))-1;
-							//break;
-						}
-					}
-					else
-					{
-						maps.Add(newMap);
-						mapsLookup.Add(newMap, maps.Count - 1);
-						nextValue = maps.Count - 1;
-					}
-
-					transition.Add(currentIndex, nextValue);
-				}
-				currentIndex = transition[currentIndex];
-
-				if (print)
-				{
-					NoelConsole.WritingYPosition = value;
-					NoelConsole.Write(String.Join('\n', maps[currentIndex]));
-					Thread.Sleep(100);
-				}
-			}
-
-			var lastArea = maps[currentIndex];
+		/* 	var lastArea = maps[currentIndex];
 			NoelConsole.Write("Nb Diff Maps :" + maps.Count);
 			NoelConsole.Write("Nb Transition :" + transition.Count);
 			NoelConsole.Write("Loop Back Index :" + loopbackIndex);
-			NoelConsole.Write("Loop size :" + (firstIndexLoop-loopbackIndex));
+			NoelConsole.Write("Loop size :" + (firstIndexLoop - loopbackIndex));
 			NoelConsole.Write("First Index start Loop :" + firstIndexLoop);
-			return lastArea.Sum(x => x.Count(y => y == '#')) * lastArea.Sum(x => x.Count(y => y == '|'));
+			return */
 			/* Enumerable.Range(1, 50 * 3)
 			.AsParallel()
 			.SelectMany(x => MakeMap(x));
 			return 1; */
 
 		}
+
+		private static int CalculateScore(string[] result) => result.Sum(x => x.Count(y => y == '#')) * result.Sum(x => x.Count(y => y == '|'));
 
 		private class MapEqualityComparer : IEqualityComparer<String[]>
 		{

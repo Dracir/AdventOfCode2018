@@ -16,12 +16,12 @@ namespace AdventOfCode2018
 
 			var inputParsed = Parse(File.ReadAllLines("Data/D12Input.txt"));
 			var inpoutMath = Parse(File.ReadAllLines("Data/D12Math.txt"));
-			NoelConsole.WriteWithTime(() => "" + Part1(inpoutMath,20,false));
+			//NoelConsole.WriteWithTime(() => "" + Part1(inpoutMath,20,false));
 			//NoelConsole.WriteWithTime(() => "" + Part1(inputParsed, 50000000000, true));
 
 			//Asset.AreEqual(138, Part1(test), "Part1 Test 1");
 			//NoelConsole.WriteWithTime(() => "" + Part1(input));
-			//NoelConsole.WriteWithTime(() => "" + Part2(input));
+			NoelConsole.WriteWithTime(() => "" + Part2(inpoutMath, 50000000000, true));
 		}
 
 		private static (bool[], Dictionary<int, bool>) Parse(string[] v)
@@ -65,17 +65,22 @@ namespace AdventOfCode2018
 				//	PrintLine(line);
 			}
 			NoelConsole.Write("");
+			return CalculateScore(input, (0, line));
+		}
 
+		private static int CalculateScore((bool[], Dictionary<int, bool>) input, (int skiped, bool[] values) line)
+		{
 			int score = 0;
 			int firstIndex = input.Item1.FirstBy(x => x).Item2;
-			for (int i = firstIndex; i < line.Length; i++)
+			for (int i = firstIndex; i < line.values.Length; i++)
 			{
-				if (line[i])
-					score += i - firstIndex;
+				if (line.values[i])
+					score += i - firstIndex + line.skiped;
 			}
 
 			return score;
 		}
+
 
 		private static bool[] AdvanceLine(bool[] line, Dictionary<int, bool> spread, bool shrink)
 		{
@@ -110,6 +115,47 @@ namespace AdventOfCode2018
 			return newLine;
 		}
 
+
+		private static (int skiped, bool[] values) AdvanceLine((int skiped, bool[] values) line, Dictionary<int, bool> spread, bool shrink)
+		{
+			var newLine = new bool[line.values.Length];
+			int skiped = line.skiped;
+
+			for (int i = 2; i < line.values.Length - 2; i++)
+			{
+				var key = new bool[] { line.values[i - 2], line.values[i - 1], line.values[i], line.values[i + 1], line.values[i + 2] };
+				var keyV = BoolArrToIn(key);
+				if (spread.ContainsKey(keyV))
+					newLine[i] = spread[keyV];
+				else
+					newLine[i] = false;
+			}
+			if (line.values[2])
+				newLine = newLine.Prepend(false).Prepend(false).ToArray();
+			if (line.values[3])
+				newLine = newLine.Prepend(false).ToArray();
+
+
+			if (line.values[line.values.Length - 3])
+				newLine = newLine.Append(false).Append(false).ToArray();
+			if (line.values[line.values.Length - 4])
+				newLine = newLine.Append(false).ToArray();
+
+
+			if (shrink)
+			{
+				var sline = newLine.Skip(0);
+				while (!sline.Skip(3).First())
+				{
+					sline = sline.Skip(1);
+					skiped++;
+				}
+
+				newLine = sline.ToArray();
+			}
+			return (skiped, newLine);
+		}
+
 		private static void PrintLine(bool[] arr)
 		{
 			string str = "";
@@ -118,11 +164,47 @@ namespace AdventOfCode2018
 			NoelConsole.Write(str);
 		}
 
-		private static int Part2((bool[], Dictionary<bool[], bool>) input)
+		private static void PrintLine((int skiped, bool[] values) line)
 		{
+			string str = "";
+			foreach (var c in line.values)
+				str += c ? '#' : '.';
 
-			return 1;
+			str += "    Skiped " + line.skiped;
+			NoelConsole.Write(str);
+		}
 
+		private static int Part2((bool[], Dictionary<int, bool>) input, long nbGens, bool shrink)
+		{
+			var processor = new CachedProcessor<(int skiped, bool[] values)>(new LineEqualityComparer(), (inVal) => AdvanceLine(inVal, input.Item2, shrink));
+			processor.Print = true;
+			//processor.PrintTAction = PrintLine;
+			var result = processor.Run((0, input.Item1), nbGens);
+			NoelConsole.Write("skip " + result.skiped);
+			for (int i = 10; i >= 1; i--)
+			{
+				PrintLine(processor.CachedValues[processor.CachedValues.Count() - i]);
+			}
+			return CalculateScore(input, result);
+
+		}
+
+		private class LineEqualityComparer : IEqualityComparer<(int skiped, bool[] values)>
+		{
+			public bool Equals((int skiped, bool[] values) map1, (int skiped, bool[] values) map2)
+			{
+				if (map1.values.Length != map2.values.Length) return false;
+				for (int i = 0; i < map1.values.Length; i++)
+				{
+					if (map1.values[i] != map2.values[i])
+						return false;
+				}
+				return true;
+			}
+			public int GetHashCode((int skiped, bool[] values) bx)
+			{
+				return bx.values.GetHashCode();
+			}
 		}
 
 
