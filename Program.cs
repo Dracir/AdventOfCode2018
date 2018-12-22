@@ -11,7 +11,7 @@ namespace AdventOfCode2018
 			Console.WindowHeight = 80;
 			Console.WindowTop = 4;
 			NoelConsole.Redraw();
-			Day16.Work();
+			Day15.Work();
 
 			while (true)
 			{

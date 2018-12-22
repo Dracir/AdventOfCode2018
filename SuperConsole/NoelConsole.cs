@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Diagnostics;
 
 namespace AdventOfCode2018
@@ -88,7 +89,7 @@ namespace AdventOfCode2018
 			int y = Height - 2;
 			for (int day = 1; day <= Progression.Stars.Length; day++)
 			{
-				int stars = Progression.Stars[day-1];
+				int stars = Progression.Stars[day - 1];
 				int giftSize = 0;
 				if (stars == 2)
 					giftSize = DrawBigGift(day, x, y);
@@ -212,6 +213,20 @@ namespace AdventOfCode2018
 			NoelConsole.Write("Output for input : " + func());
 			t.Stop();
 			NoelConsole.Write(String.Format("Time : {0:0.00}s", t.ElapsedMilliseconds / 1000f));
+		}
+
+		public static void Write(char[,] values)
+		{
+			var lines = "";
+			for (int y = values.GetLength(1)-1; y >= 0 ; y--)
+			{
+				string line = "";
+				for (int x = 0; x < values.GetLength(0); x++)
+					line += values[x, y];
+				lines += line + "\n";
+			}
+			lines = new String(lines.SkipLast(1).ToArray());
+			Write(lines);
 		}
 
 		public static void Write(int[,] values)
