@@ -9,6 +9,10 @@ namespace AdventOfCode2018
 		{
 			return Int32.Parse(gc[index].Value);
 		}
+		public static long LongValue(this GroupCollection gc, int index)
+		{
+			return Int64.Parse(gc[index].Value);
+		}
 
 	}
 }

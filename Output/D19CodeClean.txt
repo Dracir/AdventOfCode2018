@@ -1,0 +1,24 @@
+goto D + 16					\\addi 3 16 3
+while true
+	B = 1					\\seti 1 5 1
+	while B > C
+		while E > C
+			E = 1					\\seti 1 4 4
+			F = B * E					\\mulr 1 4 5
+			if F == C
+				A = B + A					\\addr 1 0 0
+			else
+				E = E + 1					\\addi 4 1 4
+		B = B + 1					\\addi 1 1 1
+	goto D * D					\\mulr 3 3 3
+
+
+	C = 836
+	F = 69
+	
+	C = 905
+
+	
+	F = 10563840
+	C = 10564745
+	C = 10551305

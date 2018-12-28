@@ -24,7 +24,11 @@ namespace AdventOfCode2018
 				this.OpCodeName = opCodeName;
 				this.Code = code;
 			}
+
+			public bool IsCondition { get { return OpCodeName.StartsWith("gt") || OpCodeName.StartsWith("eq"); } }
 		}
+
+		public static ElfTruction whil = new ElfTruction(-1, "while", (argA, argB, registers) => 0);
 
 		public static ElfTruction addr = new ElfTruction(-1, "addr", (argA, argB, registers) => registers[argA] + registers[argB]);
 		public static ElfTruction addi = new ElfTruction(-1, "addi", (argA, argB, registers) => registers[argA] + argB);
@@ -66,7 +70,8 @@ namespace AdventOfCode2018
 			return Compile(GetFunc(opcode), argA, argB, argC, registers);
 		}
 
-		public static ElfTruction GetFunc(string opcode){
+		public static ElfTruction GetFunc(string opcode)
+		{
 			return opCodes.First(x => x.OpCodeName == opcode);
 		}
 	}

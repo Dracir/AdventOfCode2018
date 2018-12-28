@@ -20,15 +20,49 @@ namespace AdventOfCode2018
 
 		public T this[int x, int y]
 		{
-			get { return Values[x, y]; }
+			get { return Values[x + OffsetX, y + OffsetY]; }
 			set
 			{
-				Values[x, y] = value;
+				Values[x + OffsetX, y + OffsetY] = value;
 				minX = Math.Min(minX, x);
 				minY = Math.Min(minY, y);
 				maxX = Math.Max(maxX, x);
 				maxY = Math.Max(maxY, y);
 			}
+		}
+
+		public IEnumerable<Point> Points()
+		{
+			for (int x = minX; x <= maxX; x++)
+				for (int y = minY; y <= maxY; y++)
+					yield return new Point(x, y);
+		}
+
+
+		public IEnumerable<Point> AreaSquareAround(Point pt, int radiusDistance)
+		{
+
+			int x1 = Math.Max(minX, pt.X - radiusDistance);
+			int y1 = Math.Max(minY, pt.Y - radiusDistance);
+			int x2 = Math.Max(maxX, pt.X + radiusDistance);
+			int y2 = Math.Max(maxY, pt.Y + radiusDistance);
+
+			for (int x = x1; x <= x2; x++)
+				for (int y = y1; y <= y2; y++)
+						yield return new Point(x, y);
+		}
+		public IEnumerable<Point> AreaAround(Point pt, int manhattanDistance)
+		{
+
+			int x1 = Math.Max(minX, pt.X - manhattanDistance);
+			int y1 = Math.Max(minY, pt.Y - manhattanDistance);
+			int x2 = Math.Max(maxX, pt.X + manhattanDistance);
+			int y2 = Math.Max(maxY, pt.Y + manhattanDistance);
+
+			for (int x = x1; x <= x2; x++)
+				for (int y = y1; y <= y2; y++)
+					if (x + y <= manhattanDistance)
+						yield return new Point(x, y);
 		}
 
 		public IEnumerable<int> ColumnIndexs()
@@ -81,10 +115,6 @@ namespace AdventOfCode2018
 		{
 			this.DefaultValue = defaultValue;
 			Values = new T[2 * OffsetX, 2 * OffsetY];
-			minX = OffsetX;
-			minY = OffsetY;
-			maxX = OffsetX;
-			maxY = OffsetY;
 		}
 
 	}

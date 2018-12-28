@@ -123,10 +123,11 @@ namespace AdventOfCode2018
 						str += c;
 					else
 					{
-						if(str.Length
+						//	if(str.Length
 					}
 				}
 			}
+			return null;
 
 		}
 

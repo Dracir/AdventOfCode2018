@@ -46,10 +46,14 @@ namespace AdventOfCode2018
 		{
 			return enumeration.Aggregate(enumeration.First(), (currMax, x) => selector(currMax) < selector(x) ? x : currMax);
 		}
-
-		public static (T,int) FirstBy<T>(this IEnumerable<T> enumeration, Func<T, bool> selector)
+		public static T MaxBy<T>(this IEnumerable<T> enumeration, Func<T, long> selector)
 		{
-			return enumeration.Select((x,i)=>(x,i)).First(x=>selector(x.x));
+			return enumeration.Aggregate(enumeration.First(), (currMax, x) => selector(currMax) < selector(x) ? x : currMax);
+		}
+
+		public static (T, int) FirstBy<T>(this IEnumerable<T> enumeration, Func<T, bool> selector)
+		{
+			return enumeration.Select((x, i) => (x, i)).First(x => selector(x.x));
 
 		}
 
@@ -66,7 +70,7 @@ namespace AdventOfCode2018
 
 		}
 
-		public static IEnumerable<T> Flatten<T>(this IEnumerable<T> e, Func <T,IEnumerable<T>> selector)
+		public static IEnumerable<T> Flatten<T>(this IEnumerable<T> e, Func<T, IEnumerable<T>> selector)
 		{
 			return e.SelectMany(c => Flatten(selector(c), selector));
 		}
